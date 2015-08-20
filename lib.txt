@@ -1,0 +1,268 @@
+== Library ==
+
+=== Static and dynamic libraries
+
+Compiling source while stopping at object file can be done with the `-c` option.
+You can bunch such object files into a single archive/object.  This is called library.
+
+* static library: `libfoo.a`
+** simple archive of object files (`*.o`) as "`ar rcs libfoo.a *.o`"
+** *.a may be used just like bunch of `*.o` files while linking.
+* dynamic library: `libfoo.so`
+** all object files (`*.o`) compiled with `gcc` option `-fPIC`.
+** shared object file created by "`gcc -shared -Wl,-soname,libfoo.so.1 -o libfoo.so.1.0 *.o`".
+** associated symbolic links created by "`ldconfig`".
+
+TIP: In order to load a library file with the GCC `-l` option, its name must
+start with `lib`.
+
+I do not go in details here but the `gccintro` package provides a good tutorial
+"Introduction to GCC by Brian J. Gough" with examples.
+
+See also:
+
+* http://people.redhat.com/drepper/dsohowto.pdf[How To Write Shared Libraries] by Ulrich Drepper (2011-12-10)
+* http://people.redhat.com/drepper/goodpractice.pdf[Good Practices in Library Design, Implementation, and Maintenance] by Ulrich Drepper (2002-03-07)
+* http://people.redhat.com/drepper/symbol-versioning[ELF Symbol Versioning] by Ulrich Drepper
+* http://www.eyrie.org/~eagle/notes/rpath.html[Shared Library Search Paths] by Russ Allbery (2011-11-11)
+* http://wiki.debian.org/RpathIssue[RPATH issue] (wiki.debian.org)
+* Dynamic Linking in Linux and Windows http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-one[part one] and http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-two[part two] by Reji Thomas and Bhasker Reddy (2010-11-02) 
+* http://static.usenix.org/publications/library/proceedings/als00/2000papers/papers/full_papers/browndavid/browndavid_html/[Library Interface Versioning in Solaris and Linux] by David J. Brown and Karl Runge (October 2010-10-10)
+* http://www.ibm.com/developerworks/linux/library/l-lpic1-v3-102-3/[Learn Linux, 101: Manage shared libraries] by Ian Shields (IBM DW, Date: 31 Aug 2011)
+* http://www.ibm.com/developerworks/linux/library/l-setup-sharedlibs-pr/[Practice: Manage shared libraries] by Tracy Bost (IBM DW, Date: 21 Jun 2011) 
+* http://www.ibm.com/developerworks/linux/library/l-dynamic-libraries/[Anatomy of Linux dynamic libraries] by M. Tim Jones (IBM DW, Date:  20 Aug 2008)
+* http://www.ibm.com/developerworks/linux/library/l-shared/[Use shared objects on Linux] by Sachin Agrawal (IBM DW, Date:  11 May 2004)
+* http://tldp.org/HOWTO/Program-Library-HOWTO/[Program Library HOWTO] by David A. Wheeler (TLDP, 11 April 2003)
+* http://www.ibm.com/developerworks/library/l-shobj/[Shared objects for the object disoriented!] by Ashish Bansal (IBM DW, Date:  01 Apr 2001)
+
+=== GNU C Library ===
+
+The Debian `libc6:amd64` package offeres
+http://en.wikipedia.org/wiki/Embedded_GLIBC[embedded GNU C library] which
+contains the standard libraries that are used by nearly all programs on the
+system. 
+
+.Shared libraries offered by the `libc6:amd64` package.
+----
+include::lib/libc/libc.log[]
+----
+
+=== libc ===
+
+Most of the standard C library functions are included in the `libc` library.
+
+You do not mention linking to the `libc` library explicitly using the `-l` option to GCC.  It is always linked.
+
+Most of the basic functions of the `libc` library are explained in many C
+programing tutorials such as "The C programming Language, by B. W. Kerninghan
+and Dennis M. Ritchie".  I will skip most of those mentioned in such tutorials.
+
+http://www.gnu.org/software/libc/manual/[The GNU C Library] manual is also good source of information.
+
+include::libc.txt[]
+
+=== libm ===
+
+Although most of standard C library functions are included in the `libc` library,
+some math related library functions are in the separate `libm` library.
+
+So such program requires to be linked not just to `libc` but also to `libm`.
+
+Let's consider `math.c` to calculate `sin(60 degree)`.
+
+.Source code: math.c
+[source,c]
+----
+include::lib/libm/math.c[]
+----
+
+Let's compile `math.c` while linking to the `libm` library to create an ELF executable object `math` and run it.
+
+----
+include::lib/libm/math.log[]
+----
+
+TIP: The linked library is specified after the `-l` option to GCC while removing the leading `lib` from the library name.
+
+Let's list linked libraries to the ELF executable object `hello`.
+
+----
+include::lib/libm/math-ldd.log[]
+----
+
+* `linux-vdso.so.1` : Linux Virtual Dynamic Shared Object
+* `libm.so.6` : The GNU C Library (glibc, support math functions)
+* `libc.so.6` : The GNU C Library (glibc)
+* `/lib64/ld-linux-x86-64.so.2` :  dynamic linker/loader
+
+We can split `math.c` into 3 files and compile each code piece.
+
+.Source code: math-main.c containing the main() function only
+[source,c]
+----
+include::lib/libm/math-main.c[]
+----
+
+.Source code: sindeg.c containing the sindeg() function only
+[source,c]
+----
+include::lib/libm/sindeg.c[]
+----
+
+.Source code: sindeg.h containing the header information of sindeg()
+[source,c]
+----
+include::lib/libm/sindeg.h[]
+----
+
+Let's compile these into separate object files (`*.o` files) with the `-c` option
+and link them into a executable `math-main` specified with the `-o` option.
+
+.Building math-main via separate object files and running it.
+----
+include::lib/libm/math-main.log[]
+----
+
+=== libdl
+
+`libdl` provides the following generic functions for the dynamic loader.
+
+* `dlopen`(3): POSIX
+* `dlerror`(3): POSIX
+* `dlsym`(3): POSIX
+* `dlclose`(3): POSIX
+* `dladdr`(3): Glibc extensions
+* `dlvsym`(3): Glibc extensions
+
+Let's convert `math.c` to `math-dl.c` which uses `libm` via dynamic linking
+loader provided by `libdl`.  Here, function names prefixed with `v` are defined
+as wrappers for the `dlopen`, `dlsym`, and `dlclose` functions providing
+verbose error reporting.  So the core is just `main()`.
+
+.Source code: math-dl.c 
+[source,c]
+----
+include::lib/libdl/math-dl.c[]
+----
+
+Let's compile this `math-dl.c` by not directly linking to `libm` but to `libdl`.
+
+.Building math-dl and running it.
+----
+include::lib/libdl/math-dl.log[]
+----
+
+The `-rdynamic` option is used to add all symbols to the dynamic symbol table
+to permit backtraces with the use of dlopen.  The `-ldl` option is for the
+`libdl.so` library.  You do not need the `-lm` option here but need `libm.so`
+library installed in the system.
+
+=== libpthread
+
+The http://en.wikipedia.org/wiki/Thread_(computing)[thread] can efficiently implement parallelism for shared memory multiprocessor architectures, such as SMPs.  The thread creation does not copy ever resources like the http://en.wikipedia.org/wiki/Fork-exec[fork-exec] multiprocessing mechanism of the UNIX-like system.  http://en.wikipedia.org/wiki/POSIX_Threads[POSIX thread] is supported by the modern GNU/Linux (with [Linux kernel 2.6 or newer]) with the `libpthread` library.  Here are some references and tutorials.
+
+* https://computing.llnl.gov/tutorials/parallel_comp/[Introduction to Parallel Computing]
+* https://computing.llnl.gov/tutorials/pthreads/[POSIX Threads Programming]
+* http://www.gentoo.org/doc/en/articles/l-posix1.xml[POSIX threads explained] (updated, based on http://www.ibm.com/developerworks/library/l-posix1/[IBM developerWorks: POSIX threads explained].)
+
+// GNU/Linux でのスレッドプログラミング http://www.tsoftware.jp/nptl/
+
+TIP: We should focus on reading tutorials which are written after the http://en.wikipedia.org/wiki/Native_POSIX_Thread_Library[native POSIX thread library (NPTL)] support.  This means tutorial should be newer than 2006.
+
+The actual execution speed of a program on the modern CPU can be affected by many issues other than the utilization of CPU cores:
+
+* http://en.wikipedia.org/wiki/Out-of-order_execution[Out-of-order execution]
+* http://en.wikipedia.org/wiki/Instruction-level_parallelism[Instruction-level parallelism]
+* http://en.wikipedia.org/wiki/Instruction_pipeline[Instruction pipeline]
+* http://en.wikipedia.org/wiki/CPU_cache[CPU cache]
+* http://en.wikipedia.org/wiki/Cache_coherence[Cache coherence]
+* http://en.wikipedia.org/wiki/Amdahl\'s_law[Amdahl's law]
+
+I am no expert to tell how all these fit together.  But seeing is believing. Let's use a touched-up C programs to list prime numbers based on `while`-loop style in <<_c_with_the_list_variants,C with the list (variants)>> to to experiment with the POSIX thread programing.  This algorithm has some sequential nature.  So the task of partitioning the program into parallel and mostly independent code is non-trivial.  The observed execution time figures are significantly different.
+
+* `prime5.c`: fast
+** single-threaded program, a uninterrupted tight code.
+* `prime6.c`: slow
+** multi-threaded program, a thread started for each integer.
+* `prime7.c`: very slow
+** multi-threaded program, fixed number of threads are started and controlled via http://en.wikipedia.org/wiki/Semaphore_(programming)[semaphore].
+* `prime8.c`: very fast
+** multi-threaded program, fixed number of threads are started only for the time consuming large number portion while each thread is written as a uninterrupted tight code.
+
+Here is a benchmark results of execution times for these programs listed below.
+
+.Speed benchmark of various program languages
+[frame="topbot",options="header"]
+|============================
+include::prime/bench/time-table1.txt[]
+|============================
+
+Here, the time reported by the `/usr/bin/time -p` command is in POSIX standard 1003.2 style:
+
+* `real`: Elapsed real (wall clock) time used by the process, in seconds.
+* `user`: Total number of CPU-seconds that the process used directly (in user mode), in seconds.
+* `sys`: Total number of CPU-seconds used by the system on behalf of the process (in kernel mode), in seconds.
+
+It seems that the `user` time and the `sys` time add up all multi-threaded time figures so they may end up in larger figure than the `real` time figure for multi-threaded programs.  There are a similar `sar` command offered by the `sysstat` and `atsar` packages which has more functionalities.  But if you are looking for more insight for the time, you should consider using the `perf` command. See <<_perf,Debug: level 2; perf>>.
+
+TIP: Unless properly used, the use of the thread mechanism does not guarantee the faster code.
+
+==== `prime5.c`: single-threaded program, a uninterrupted tight code.
+
+.Source code for the C program: prime5.c
+[source,c]
+----
+include::prime/c-pthread/prime5.c[]
+----
+
+.Behavior of the C program: `prime5.c`
+----
+include::prime/c-pthread/prime5-test.log[]
+----
+
+==== `prime6.c`: multi-threaded program, a thread started for each integer.
+
+.Source code for the Vala program: prime6.c
+[source,c]
+----
+include::prime/c-pthread/prime6.xxx[]
+----
+
+.Behavior of the C program: `prime6.c`
+----
+include::prime/c-pthread/prime6-test.log[]
+----
+
+==== `prime7.c`: multi-threaded program, fixed number of threads are started and controlled via http://en.wikipedia.org/wiki/Semaphore_(programming)[semaphore].
+
+.Source code for the Vala program: prime7.c
+[source,c]
+----
+include::prime/c-pthread/prime7.xxx[]
+----
+
+.Behavior of the C program: `prime7.c`
+----
+include::prime/c-pthread/prime7-test.log[]
+----
+
+==== `prime8.c`: multi-threaded program, fixed number of threads are started only for the time consuming large number portion while each thread is written as a uninterrupted tight code.
+
+.Source code for the Vala program: prime8.c
+[source,c]
+----
+include::prime/c-pthread/prime8.xxx[]
+----
+
+.Behavior of the C program: `prime8.c`
+----
+include::prime/c-pthread/prime8-test.log[]
+----
+
+Actually, this program is buggy for smaller than 1090.  We will debug this later.
+
+.Buggy behavior of the C program for 1090: `prime8.c`
+----
+include::prime/c-pthread/prime8-bug.log[]
+----
+

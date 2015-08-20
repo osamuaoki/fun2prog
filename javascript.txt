@@ -1,0 +1,16 @@
+=== JavaScript
+
+http://en.wikipedia.org/wiki/JavaScript[JavaScript] programming language is
+selected to be the embedded language of
+http://en.wikipedia.org/wiki/GNOME_Shell[GNOME Shell].  See:
+
+* https://developer.mozilla.org/en-US/docs/JavaScript[JavaScript] (Mozilla)
+* https://live.gnome.org/JavaScript[JavaScript] (GNOME)
+* https://live.gnome.org/GnomeShell[GNOME Shell]
+* https://live.gnome.org/GnomeShell/Technology[GNOME Shell: Technology]
+* https://live.gnome.org/GnomeShell/Extensions[GNOME Shell: Extensions]
+* https://live.gnome.org/GnomeShell/Extensions/StepByStepTutorial[GNOME Shell: Step by step tutorial to create extensions]
+
+I am not going into details now.
+
+

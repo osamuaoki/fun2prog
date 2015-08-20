@@ -1,0 +1,323 @@
+=== SQL syntax in EBNF
+
+.SQL(SQLite) syntax in EBNF.
+-----------
+sql-stmt-list:
+	[ sql-stmt # ";" ]*
+	;
+sql-stmt:
+	[ "EXPLAIN" [ "QUERY" "PLAN" ] ]
+	( *-stmt )
+	;
+alter-table-stmt: /* *-stmt */
+	"ALTER" "TABLE" [ database-name "." ] table-name
+	( "RENAME" "TO" new-table-name
+	| "ADD" [ "COLUMN" ] column-def
+	)
+	;
+analyze-stmt: /* *-stmt */
+	"ANALYZE"
+	[ database-name
+	| tabale-or-index-name
+	| databas-name "." table-or-index-name
+	]
+	;
+attach-stmt: /* *-stmt */
+	"ATTACH" [ "DATABASE" ] expr "AS" database-name
+	;
+begin-stmt: /* *-stmt */
+	"BEGIN" [ "DEFERED" | "IMMEDIATE" | "EXCLUSIVE" ] [ "TRANSACTION" ]
+	;
+commit-stmt: /* *-stmt */
+	( "COMMIT" | "END" ) [ "TRANSACTION" ]
+	;
+rollback-stmt: /* *-stmt */
+	"ROLLBACK" [ "TRANSACTION" ]
+	[ "TO" [ "SAVEPOINT" ] savepoint-name ]
+	;
+savepoint-stmt: /* *-stmt */
+	"SAVEPOINT" savepoint-name
+	;
+release-stmt: /* *-stmt */
+	"RELEASE" [ "SAVEPOINT"  ] savepoint-name
+	;
+create-index-stmt: /* *-stmt */
+	"CREATE" [ "UNIQUE" ] "INDEX" [ "IF" "NOT" "EXISTS" ]
+	[ database-name "." index-name ] "ON" table-name
+	"(" ( index-column # "," )+ ")"
+	;
+indexed-column:
+	column-name [ "COLLATE" collation-name ]
+	[ "ASC" | "DESC" ]
+	;
+create-table-stmt: /* *-stmt */
+	"CREATE" [ "TEMP" | "TEMPORARY" ] "TABLE"
+	[ "IF" "NOT" "EXISTS" ]
+	[ database-name "." ] table-name
+	( "(" ( column-def # "," )+ [ "," table-constant ]* ")"
+	| "AS" select-stmt
+	)
+	;
+column-def:
+	column-name [ type-name ] [ column-constraint ]*
+	;
+column-constraint:
+	[ "CONSTRAINT" name ]
+	( "PRIMARY" "KEY" [ "ASC" | "DESC" ] conflict-clause
+		[ "AUTOINCREMENT" ]
+	| "NOT" "NULL" conflict-clause
+	| "UNIQUE" conflict-clause
+	| "CHECK" "(" expr ")"
+	| "COLLATE" collation-name
+	| foreign-key-clause
+	)
+	;
+signed-number:
+	[ "+" | "-" ] numeric-literal
+	;
+table-constraint:
+	[ "CONSTRAINT" name ]
+	( ( "PRIMARY" "KEY" | "UNIQUE" )
+		"(" ( index-column # "," )+ ")" conflict-clause
+	| "CHECK" "(" expr ")"
+	| "FOREIGN" "KEY" 
+		"(" ( column-name # "," )+ ")" foreign-key-clause
+	)
+	;
+foreign-key-clause:
+	"REFERENCES" foreign-table
+	[ "(" ( column-name # "," )+ ")"
+	[ "ON" ( "DELETE" | "UPDATE" )
+		( "SET" "NULL"
+		| "SET" "DEFAULT"
+		| "CASCADE"
+		| "RESTRICT"
+		| "NO" "ACTION"
+		)
+	| "MATCH" name
+	]*
+	[ [ "NOT" ] "DEFERRABLE"
+		[ "INITIALLY" ( "DIFERRED" | "IMMEDIATE" ) ]
+	]
+	;
+conflict-clause:
+	[ "ON" "CONFLICT"
+		( "ROLLBACK | "ABORT" | "FAIL" | "IGNORE"
+			| "REPLACE" )
+	]
+	;
+create-trigger-stmt: /* *-stmt */
+	"CREATE" [ "TEMP" | "TEMPORARY" ] "TRIGGER"
+	[ "IF" "NOT" "EXISTS" ]
+	[ database-name "." ] table-name
+	[ "BEFORE" | "AFTER" | "INSTEAD" "OF" ]
+	( "DELETE"
+	| "INSERT"
+	| "UPDATE" [ "OF" ( column-name # "," )+
+	)
+	"ON" table-name [ "FOR" "EACH" "ROW" ] [ "WHEN" expr ]
+	"BEGIN"
+	( ( update-stmt | insert-stmt | delete-stmt | select-stmt ) ";" )+
+	"END"
+	;
+create-view-stmt: /* *-stmt */
+	"CREATE" [ "TEMP" | "TEMPORARY" ] "VIEW"
+	[ "IF" "NOT" "EXISTS" ]
+	[ database-name "." ] view-name
+	"AS"  select-stmt
+	;
+create-virtual-table-stmt: /* *-stmt */
+	"CREATE" "VIRTUAL" "TABLE"
+	[ "IF" "NOT" "EXISTS" ]
+	[ database-name "." ] tablename
+	"USING"  module-stmt [ "(" ( module-argument # "," )+ ")" ]
+	;
+delete-stmt: /* *-stmt */
+	"DELETE" "FROM" qualified-table-name
+	[ "WHERE" expr ]
+	;
+delete-stmt-limited: /* *-stmt */
+	delete-stmt
+	[ "ORDER" "BY" ( ordering-term # "," )+
+		"LIMIT" expr [ ( "OFFSET | "," ) expr ]
+	]
+	;
+detach-stmt: /* *-stmt */
+	"DETACH" [ "DATABASE" ] database-name
+	;
+drop-index-stmt: /* *-stmt */
+	"DROP" "INDEX" [ "IF" "EXISTS" ] 
+		[ database-name "." ] index-name
+	;
+drop-table-stmt: /* *-stmt */
+	"DROP" "TABLE" [ "IF" "EXISTS" ] 
+		[ database-name "." ] table-name
+	;
+drop-trigger-stmt: /* *-stmt */
+	"DROP" "TRIGGER" [ "IF" "EXISTS" ] 
+		[ database-name "." ] trigger-name
+	;
+drop-view-stmt: /* *-stmt */
+	"DROP" "VIEW" [ "IF" "EXISTS" ] 
+		[ database-name "." ] view-name
+	;
+expr:	( literal-value
+	| bind-parameter
+	| [ [ database-name "." ] table-name "." ] column-name 
+	| unary-operator expr
+	| expr binary-operator expr
+	| function-name "(" [ [ "DISTINCT" ] expr [ "," expr ]* | "*" ] ")"
+	| "(" expr ")"
+	| "CAST" "(" expr as type-name ")"
+	| expr "COLLATE" collation-name
+	| expr [ "NOT" ] ( "LIKE"
+			 | "GLOB"
+			 | "REGEXP"
+			 | "MATCH"
+			 ) 		expr [ "ESCAPE" expr ]
+	| expr ( "ISNULL" | "NOTNULL" | "NOT" "NULL" )
+	| expr "IS" [ "NOT" ] expr
+	| expr "IS" [ "NOT" ] "BETWEEN" expr "AND" expr
+	| expr "IS" [ "NOT" ] "IN" ( "(" [ select-stmt | ( expr # "," )+ ] ")"
+				   | [ database-name "." ] table-name
+				   )
+	| [ [ "NOT" ] "EXISTS" ] "(" select-stmt ")"
+	| "CASE" [ expr ] ( "WHEN" expr "THEN" expr )+ [ "ELSE" expr ] "END"
+	| raise-function
+	)
+	;
+raise-function:
+	"RAISE" "(" ( "IGNORE"
+		    | ( "ROLLBACK" | "ABORT" | "FAIL" ) "," error-message
+		    )							   ")"
+	;
+literal-value:
+	( numeric-literal
+	| string-literal
+	| blob-literal
+	| "NULL"
+	| "CURRENT_TIME"
+	| "CURRENT_DATE"
+	| "CUTTENT_TIMESTAMP"
+	)
+	;
+numeric-literal:
+	( ( digit )+ [ decimal-point [ digit ]* ]
+	| decimal-point [ digit ]*
+	) [ "E" [ "+" | "-" ] ( digit )+ ]
+	;
+insert-stmt: /* *-stmt */
+	( "INSERT" [ "OR" ( "ROLLBACK" | "ABORT" | "REPLACE" | "FAIL" | "IGNORE" ) ]
+	| "REPLACE"
+	) "INTO" [ database-name "." ] table-name
+		( [ "(" ( column-name # "," )+ ")" ]
+			( "VALUES" ( "(" ( expr # "," )+ ")" # "," )+
+			| select-stmt
+			)
+		| "DEFAULT" "VALUES"
+		)
+	;
+pragma-stmt: /* *-stmt */
+	"PRAGMA" [ database-name "." ] pragma-name [ "=" pragma-value
+						   | "(" pragma-value ")"
+						   ]
+	;
+pragma-value:
+	( signed-number | name | string-literal )
+	;
+reindex-stmt: /* *-stmt */
+	"REINDEX" [ collation-name
+		  | [ database-name "." ] ( table-name | index-name )
+		  ]
+	;
+select-stmt: /* *-stmt */
+	( select-core # compound-operator )+
+	[ "ORDER" "BY" ( ordering-term # "," )+ ]
+	[ "LIMIT" expr [ [ "OFFSET" | "," ] expr ]
+	;
+select-core:
+	"SELECT" [ "DISTINCT" | "ALL" ] ( result-column # "," )+
+	[ "FROM" join-source ]
+	[ "WHERE" expr ]
+	[ "GROUP" "BY" ( expr # "," )+ [ "HAVING" expr ] ]
+	;
+result-column:
+	( "*"
+	| table-name "." "*"
+	| expr [ [ "AS" ] column-alias ]
+	)
+	;
+join-source:
+	single-source [ join-op single-source join-constraint ]*
+	;
+single-source
+	( [ database-name "." ] table-name [ [ "AS" ] table-alias ]
+		[ "INDEXED" "BY" index-name
+		| "NOT" "INDEXED"
+		]
+	| "(" select-stmt ")" [ [ "AS" ] table-alias ]
+	| "(" join-stmt ")"
+	)
+	;
+join-op:
+	( "," | [ "NATURAL" ] [ "LEFT" [ "OUTER" ]
+			      | "INNER"
+			      | "CROSS"
+			      ] 		    "JOIN" ] )
+	;
+join-constraint:
+	[ "ON" expr
+	| "USING" "(" ( column-name # "," )+
+	]
+	;
+ordering-term:
+	expr [ "COLLATE" collation-name ] [ "ASC" | "DESC" ]
+	;
+compound-operator:
+	( "UNION" [ "ALL" ]
+	| "INTERSECT"
+	| "EXCEPT"
+	)
+	;
+update-stmt: /* *-stmt */
+	"UPDATE" [ "OR" [ "ROLLBACK"
+			| "ABORT"
+			| "REPLACE"
+			| "FAIL"
+			| "IGNORE"
+			]		] qualified-table-name
+	"SET" ( column-name "=" expr # "," )+ [ "WHERE" expr ]
+	;
+update-stmt-limited: /* *-stmt */
+	update-stmt
+	[ [ "ORDER" "BY" ( ordering-term # "," )+ ]
+		"LIMIT" expr [ ( "OFFSET" | "," ) expr ] ]
+	;
+qualified-table-name:
+	[ database-name "." ] table-name 
+		[ "INDEXED" "BY" index-name
+		| "NOT" "INDEXED"
+		]
+	;
+vacuum-stmt: /* *-stmt */
+	"VACUUM"
+	;
+comment-syntax:
+	( "--" [ anything-except-newline ]* ( newline | end-of-input )
+	| "/*" [ anything-except-*/ ]* ( "*/" | end-of-input )
+	)
+	;
+----
+
+Here for SQLite synatx, I use my variant of ENBF style for simplicity and
+readability:
+
+* "`foo*`" : zero or more repeats of "foo"
+* "`foo+`" : one or more repeats of "foo"
+* "`[ foo | bar ]`" : zero or one of "foo" or "bar" but not both.
+* "`( foo | bar )`" : one of "foo" or "bar" but not both.
+* "`[ foo | bar ]*`" : zero or more repeats of "foo" or "bar"
+* "`( foo | bar )+`" : one or more repeats of "foo" or "bar"
+* "`[ foo # "," ]*`" : zero or more repeats of "foo" separated with ","
+* "`( foo # "," )+`" : one or more repeats of "foo" separated with ","
+

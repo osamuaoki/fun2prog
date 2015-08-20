@@ -1,0 +1,298 @@
+=== libc: macro
+
+There are some macros defined in the `libc` library.  They tend to make
+programs easier to read.
+
+.Macro for exit status.
+------------------
+include::lib/libc/EXIT.log[]
+------------------
+
+TIP: The exit status value matches with the shell convention.  But some
+programs return `-1` as the non-zero value instead of `1` when errors are
+encountered.
+
+TIP: Defining `TRUE` and `FALSE` macros as the Boolean context values for `1`
+and `0` are popular in the C program.  They are not defined in the `libc`
+library.  So normally, user has to define them.
+
+=== libc: error.h
+
+Here are some notable items for the error handling of the `libc` library.
+
+* The `errno` integer variable is set to non-zero value when library functions encounter the error.
+* The `strerror(errno)` function returns a pointer to a string that describes the meaning of the error for `errno`.
+* The `perror("foo")` produces a message on the standard error output for `errno` with `"foo: <error message>"`
+
+The macros for the error are explained in the manpage `errno`(3).
+
+The values of the macros for the error are defined in `<errno.h>` header file which is a bit convoluted.  Arch dependent symlinks are marked as (*).:
+
+[grid="rows",cols="5,2,5"]
+|=====
+.2+.^| `<errno.h>`                  | defines  | "`extern int errno;`".
+|                                     includes | `<bits/errno.h>`.
+| `<bits/errno.h>` (*)              | includes | `<linux/errno.h>`.
+| `<linux/errno.h>`                 | includes | `<asm/errno.h>`.
+| `<asm/errno.h>` (*)               | includes | `<asm-generic/errno.h>`.
+.2+.^| `<asm-generic/errno.h>`      | defines  | many error values.
+|                                     includes | `<asm-generic/errno-base.h>`.
+| `<asm-generic/errno-base.h>`      | defines  | important error values from 1 to 34.
+|=====
+
+TIP: Make sure to include `<error.h>` in the header if a program needs to
+deal with the `libc` library generated errors.
+
+
+=== libc: string operations
+
+Unfortunately, some C string functions are known to be troublemakers.
+
+.Safe coding recommendations by busybox coders
+|=====
+|troublemaker functions |overrun concerns              |recommendation
+|`strcpy`(3)            |`dest` string                 |`safe_strncpy`
+|`strncpy`(3)           |may fail to 0-terminate `dst` |`safe_strncpy`
+|`strcat`(3)            |`dest` string                 |`strncat`(3)
+|`gets`(3)              |string it gets                |`fgets`(3)
+|`getwd`(3)             |`buf` string                  |`getcwd`(3)
+|`[v]sprintf`(3)        |`str` buffer                  |`[v]snprintf`(3)
+|`realpath`(3)          |`path` buffer                 |use with `pathconf`(3)
+|`[vf]scanf`(3)         |its arguments                 |just avoid it
+|=====
+
+Although `[vf]scanf`(3) are marked as "just avoid it", it is not the end of the
+world for the coding of the `scanf`-like logic.
+
+The combination of `getline`(3) and `sscanf`(3) is the most portable solution
+for the safe `scanf` alternative.  If the incoming data is not delimited by the
+newline "`\n`" code, `getdelim`(3) may alternatively be used in place of
+`getline`(3).
+
+The use the "`m`" flag in the format string, as described in `scanf`(3) is the
+other solution for the safe `scanf` alternative. (You need newer POSIX.1-2008
+complient `libc`.)  It uses "`[vf]scanf("%ms", &char)`" with `free` instead of
+"`[vf]scanf("%s", char)`" alone.
+
+// https://buildsecurityin.us-cert.gov/bsi/articles/knowledge/coding/816-BSI.html
+// http://stackoverflow.com/questions/2430303/disadvantages-of-scanf
+// http://blog.markloiseau.com/2012/02/two-safer-alternatives-to-scanf/
+
+=== libc: safe_strncpy
+
+The `safe_strncpy` recommended by busybox coders is essentially the 0-terminate
+guranteed `strncpy` with the safe data length.  Since it is missing in the
+`libc` library, it should be emulated by adding a custom function definition
+as:
+
+.Alternative safe string copy function `safe_strncpy`: `safe_strncpy.c`.
+[source,c]
+------------------
+include::lib/libc/safe_strncpy.c[]
+------------------
+
+.Alternative safe string copy function `safe_strncpy`: `safe_strncpy.h`.
+[source,c]
+------------------
+include::lib/libc/safe_strncpy.h[]
+------------------
+
+Let's test string copy functions: `strcpy`, `strncpy`, and `safe_strncpy`.
+
+.Test code for string copy functions: `test_strcpy.c`.
+[source,c]
+------------------
+include::lib/libc/test_strcpy.c[]
+------------------
+
+.Test result of string copy functions by `test_strcpy.c`.
+[source,c]
+------------------
+include::lib/libc/test_strcpy.log[]
+------------------
+
+Only `safe_strncpy` works safely as seen above.
+
+
+=== libc: file operations
+
+File operation in C can be done with different levels.
+
+* low level file descriptor based operations:
+** `open`(2): open and possibly create the file and return a new file descriptor
+** `close`(2): close the file descriptor
+** `lseak`(2): reposition read/write file offset associated with the file descriptor
+** `read`(2): read from the file descriptor
+** `write`(2): write to the file descriptor
+** `mmap`(2): map file associated with the file descriptor into memory
+** `fcntl`(2): manipulate file descriptor
+
+.Predefined file descriptor macros
+----
+include::lib/libc/FILENO.log[]
+----
+
+* high level stream IO based operations:
+** `fopen`(3): open and possibly create the file and associate the stream with the file
+** `fclose`(3): close the stream
+** `feof`(3):  test the end-of-file indicator for the stream
+** `ferror`(3): test the error indicator for the stream
+** `getc`(3): read a character from the binary stream
+** `putc`(3): write a character to the binary stream
+** `fread`(3): read blocks of data from the binary stream
+** `fwrite`(3): write blocks of data to the binary stream
+** `fprintf`(3): formatted text stream output conversion
+** `fscanf`(3): formatted text stream input conversion
+
+.Predefined file stream macros
+----
+include::lib/libc/std.log[]
+----
+
+Let's learn fundamentals of file operation by creating simple codes such as
+<<_libc_size_of_a_file,size of a file>> or <<_libc_copy_a_file,copy a file>>.
+These example codes are not meant to be the fastest nor the shortest code.
+
+=== libc: size of a file
+
+We can think of 4 different methods to obtain the size of a file.
+
+* *char* : read and count characters
+* *block* : read blocks and count characters
+* *lseek* : move file offset and count characters
+* *stat* : obtain file size from the directory it belongs
+
+Since *stat* method works only for real files but not for symlinks, *lseek*
+method seems to be the most popular one used.
+
+Here are benchmark results of these methods using `perf` (See <<_perf,Debug: level 4: perf>>).
+
+.Speed benchmark of various methods to obtain the file size.
+[frame="topbot",options="header"]
+|============================
+include::file/bench/perf0.txt[]
+|============================
+
+If you wish to do more than just counting characters, other methods may give
+good starting point for such programs.  I will list all the source of `size.c` as below.
+
+.Read size of a file (char)
+[source,c]
+----
+include::file/size-char/size.c[]
+----
+
+.Read size of a file (block)
+[source,c]
+----
+include::file/size-block/size.c[]
+----
+
+.Read size of a file (lseek)
+[source,c]
+----
+include::file/size-lseek/size.c[]
+----
+
+.Read size of a file (stat)
+[source,c]
+----
+include::file/size-stat/size.c[]
+----
+
+All the above example can be compiled as follows.
+
+.Example of compiling `size.c`.
+----
+include::file/size-stat/size.log[]
+----
+
+=== libc: copy a file
+
+We can think of 5 different methods to copy a file.  
+
+* *char* : copy a character at a time
+* *block* : copy a block (4 KiB) at a time 
+* *block big* : copy a block (4 MiB) at a time 
+* *mmap memcpy* : use `mmap`(2) to map input and output files while copying data with `memcpy`(3).
+* *mmap write* : use `mmap`(2) to map input file while writing data with `write`(2) from the memory.
+
+Here are benchmark results of these methods using `perf` (See <<_perf,Debug: level 4: perf>>).
+
+.Speed benchmark of various methods to copy a large file about 2.4 MiB.
+[frame="topbot",options="header"]
+|============================
+include::file/bench/perf1.txt[]
+|============================
+
+.Speed benchmark of various methods to copy a small file about 2 KiB.
+[frame="topbot",options="header"]
+|============================
+include::file/bench/perf2.txt[]
+|============================
+
+The *char* method works the slowest as expected.
+
+The *block* method works slightly faster than all other methods excluding the
+*char* method which is significantly slower.
+
+If you wish to do more than just copying a file, other methods may give good
+starting point for such programs.  For example, if many programs access the
+same file simultaneously, use of `mmap`(2) should have major advantage over
+simple block method.  I will list all the source of `cp.c` as below.
+
+.Read copy a file (char)
+[source,c]
+----
+include::file/cp-char/cp.c[]
+----
+
+.Copy a file (block)
+[source,c]
+----
+include::file/cp-block/cp.c[]
+----
+
+Copy a file (big block) replaces `#define BUFFSIZE (1024*4)` in the above with 
+`#define BUFFSIZE (1024*1024*4)`.
+
+.Copy a file (mmap+memcpy)
+[source,c]
+----
+include::file/cp-mmap-memcpy/cp.c[]
+----
+
+TIP: The dummy `write` of 1 byte of 0 to the output file after `lseek` is the
+idiom to set the size of the output file with `mmap`(2).  It will be
+overwritten by the subsequent `memcpy`(3).
+
+.Copy a file (mmap+write)
+[source,c]
+----
+include::file/cp-mmap-write/cp.c[]
+----
+
+.Example of compiling `cp.c`.
+----
+include::file/cp-mmap-write/cp.log[]
+----
+
+=== libc: setlocale ===
+
+For decimal conversion functions provided by the `libc` library such as
+`printf`(3), the 3-digit-grouping behavior depends on the locale.  Use
+`setlocale`(3) to set the locale.
+
+.Localization example of `printf` as `lprintf.c`
+[source,c]
+----
+include::lib/libc/lprintf.c[]
+----
+
+.Run `lprintf`
+----
+include::lib/libc/lprintf.log[]
+----
+
+TIP: The text translation mechanism also uses the locale.  See `gettext`(3) and "`info gettext`".
+

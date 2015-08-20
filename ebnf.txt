@@ -1,0 +1,25 @@
+=== EBNF rule
+
+Exact gramatical description can be provided using EBNF rule.
+
+.EBNF rule table (several variants)
+[header]
+|=====
+|Usage		|Notation
+|definition	|`:` or `::=` or `:=` or `=`
+|concatenation	|`,`
+|termination	|`;`
+|alternation	|`\|`
+|option		|`[ ... ]`
+|repetition	|`{ ... }`
+|grouping	|`( ... )`
+|terminal string|`' ... '` or `" ... "`
+|repeat 0 or more	|`*` (postfix)
+|repeat 1 or more	|`+` (postfix)
+|exception	|`-`
+|=====
+
+* http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form[Extended Backus–Naur Form]
+* http://www.w3.org/TR/REC-xml/#sec-notation[EBNF Notation used for XML definition]
+* http://www.cs.man.ac.uk/~pjj/bnf/bnf.html[Notations for context-free grammars]
+

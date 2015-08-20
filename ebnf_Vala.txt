@@ -1,0 +1,444 @@
+=== Vala syntax in EBNF
+
+.Vala syntax in EBNF.
+-----------
+input			: using_directive* namespace_member*
+			;
+using_directive		: "using" symbol [ "," symbol ]* ";"
+			;
+symbol			: symbol_part [ "." symbol_part ]*
+			;
+
+symbol_part		: ( "global::" identifier )
+			| identifier
+			;
+namespace_member	: [ attributes ] (   namespace_declaration
+					   | class_declaration
+					   | interface_declaration
+					   | struct_declaration
+					   | enum_declaration
+					   | errordomain_declaration
+					   | method_declaration
+					   | field_declaration
+					   | constant_declaration )
+			;
+attributes		: attribute*
+			;
+attribute		: "[" identifier [ attribute_arguments ] "]"
+			;
+attribute_arguments	: "("       attribute_argument 
+			      [ "," attribute_argument ]* ")"
+			;
+attribute_argument	: identifier "=" expression
+			;
+expression		: lambda_expression
+			| (   conditional_expression
+			    [ assignment_operator expression ] )
+			;
+assignment_operator	: "=" | "+=" | "-=" | "|=" | "&=" | "^=" | "/="
+			      | "*=" | "%=" | "<<=" | ">>="
+			;
+conditional_expression	: coalescing_expression
+			    [ "?" expression ":" expression ]
+			;
+coalescing_expression	: conditional_or_expression
+			    [ "??" coalescing_expression ]
+			;
+conditional_or_expression
+			: conditional_and_expression
+			    [ "||" conditional_and_expression ]
+			;
+conditional_and_expression
+			: in_expression
+			    [ "&&" in_expression ]
+			;
+in_expression		: inclusive_or_expression
+			    [ "in" inclusive_or_expression ]
+			;
+inclusive_or_expression	: exclusive_or_expression
+			    [ "|" exclusive_or_expression ]
+			;
+exclusive_or_expression	: and_expression
+			    [ "^" and_expression ]
+			;
+and_expression		: equality_expression
+			    [ "&" equality_expression ]
+			;
+equality_expression	: relational_expression
+			    [ ( "==" | "!=" ) relational_expression ]*
+			;
+relational_expression	: shift_expression
+			    [ ( ( "<" | "<=" | ">" | ">=" ) shift_expression )
+			      | ( "is" type )
+			      | ( "as" type ) ]*
+			;
+type			: ( "void" [ "*" ]* )
+			| ( [ "dynamic" ] [ "unowned" ] symbol
+				[ type_arguments ] [ "*" ]* [ "?" ] array_type* )
+			;
+type_weak		: ( "void" [ "*" ]* )
+			| ( [ "dynamic" ] [ "unowned" | "weak" ] symbol
+				[ type_arguments ] [ "*" ]* [ "?" ] array_type* )
+			;
+array_type		: "[" array_size "]" [ "?" ]
+			;
+shift_expression	: additive_expression
+			    [ ( "<<" | ">>" ) additive_expression ]*
+			;
+additive_expression	: multiplicative_expression
+			    [ ( "+" | "-" ) multiplicative_expression ]*
+			;
+multiplicative_expression
+			: unary_expression
+			    [ ( "*" | "/" | "%" ) unary_expression ]*
+			;
+unary_expression	: ( unary_operator unary_expression )
+			| ( "(" ( "owned" | "void" | "dynamic" | "!" | type )
+			    ")" unary_expression )
+			| primary_expression
+			;
+unary_operator		: "+" | "-" | "!" | "~" | "++" | "--" | "*" | "&"
+			      | "(owned)" | "(void)" | "(dynamic)" | "(!)"
+			;
+primary_expression	: ( literal | initializer | tuple | template
+			  | open_regex_literal | this_access | base_access
+			  | object_or_array_creation_expression
+			  | yield_expression | sizeof_expression
+			  | typeof_expression | simple_name )
+				[ member_access | pointer_member_access
+				| method_call | element_access
+				| post_increment_expression
+				| post_decrement_expression ]*
+			;
+literal			: "true" | "false" | "null" | integer_literal
+			| real_literal | character_literal | regex_literal
+			| string_literal | template_string_literal
+			| verbatim_string_literal
+			;
+initializer		: "{" argument [ "," argument ]* "}"
+			;
+arguments		: argument [ "," argument ]*
+			;
+argument		: "ref" expression
+			| "out" expression
+			|       expression
+			| identifier [ ":" expression ]
+			;
+tuple			: "(" expression [ "," expression ]* ")"
+			;
+template		: '@"' [ expression "," ]* '"'
+			;
+open_regex_literal	: "/" literal
+			;
+this_access		: "this"
+			;
+base_access		: "base"
+			;
+object_or_array_creation_expression
+			: "new" member
+				( object_creation_expression
+				| array_creation_expression )
+			;
+object_creation_expression
+			: "(" [ arguments ] ")" [ object_initializer ]
+			;
+object_initializer	: "{"       member_initializer
+			      [ "," member_initializer ] "}"
+
+member_initializer	: identifier "=" expression
+			;
+array_creation_expression
+			: [ "[" "]" ]* [ "[" [ array_size ] "]" ]
+				[ initializer ]
+			;
+array_size		: expression [ "," expression ]*
+			;
+member			: member_part [ "." member_part ]*
+			;
+member_part		: ( "global::" identifier || identifier )
+				[ type_arguments ]
+			;
+type_arguments		: "<" type [ "," type ]* ">"
+			;
+yield_expression	: "yield" [ base_access "." ] member method_call
+			;
+method_call		: "(" [ arguments ] ")" [ object_initializer ]
+			;
+sizeof_expression	: "sizeof" "(" type ")"
+			;
+typeof_expression	: "typeof" "(" type ")"
+			;
+simple_name		: ( "global::" identifier | identifier )
+				[ type_arguments ]
+			;
+lambda_expression	: lambda_expression_params "=>" lambda_expression_body
+			;
+lambda_expression_params: identifier
+			| ( "(" [ identifier [ "," identifier ]* ] ")" )
+			;
+lambda_expression_body	: expression | block
+			;
+member_declaration_modifiers
+			: member_declaration_modifier
+				[ " " member_declaration_modifier ]*
+			;
+member_declaration_modifier
+			: "async" | "class" | "extern" | "inline" | "static"
+				| "abstract" | "virtual" | "override" | "new"
+			;
+constructor_declaration : [ constructor_declaration_modifiers ]
+				"construct" block
+			;
+constructor_declaration_modifiers
+			: constructor_declaration_modifier
+				[ " " constructor_declaration_modifier ]*
+			;
+constructor_declaration_modifier
+			: "async" | "class" | "extern" | "inline" | "static"
+				| "abstract" | "virtual" | "override"
+			;
+destructor_declaration	: [ constructor_declaration_modifiers ] 
+				"~" "(" ")" block
+			;
+class_declaration	: [ access_modifier ] [ type_declaration_modifiers ]
+				"class" symbol [ type_arguments ]
+				[ ":" base_types ] "{" class_member* "}"
+			;
+base_types		: type [ "," type ]*
+			;
+class_member		: [ attributes ] ( class_declaration
+					 | struct_declaration
+					 | enum_declaration
+					 | delegate_declaration
+					 | method_declaration
+					 | signal_declaration
+					 | field_declaration
+					 | constant_declaration
+					 | property_declaration
+					 | constructor_declaration
+					 | destructor_declaration )
+			;
+access_modifier		: "private" "protected" "internal" "public"
+			;
+type_declaration_modifiers
+			: type_declaration_modifier
+				[ " " type_declaration_modifier ]*
+			;
+type_declaration_modifier : "abstract" | "extern" | "static"
+			;
+enum_declaration	: [ access_modifier ] [ type_declaration_modifiers ]
+				"enum" symbol "{" enumvalues
+					       [ ";" [ method_declaration
+					         | constant_declaration ]* ]
+					      "}"
+			;
+enumvalues		: enumvalue [ "," enumvalue ]*
+			;
+enumvalue		: [ attributes ] identifier [ "=" expression ]
+			;
+errordomain_declaration : [ access_modifier ] [ type_declaration_modifiers ]
+				"errordomain" symbol "{" errorcodes
+						      [ ";" method_declaration* ] "}"
+			;
+errorcodes		: errorcode [ "," errorcode ]*
+			;
+errorcode		: [ attributes ] identifier [ "=" expression ]
+			;
+interface_declaration	: [ access_modifier ] [ type_declaration_modifiers ]
+				"interface" symbol [ type_parameters ]
+				[ ":" base_types ] "{" interface_member* "}"
+			;
+type_parameters		: "<" identifier [ "," identifier ]* ">"
+			;
+interface_member	: [ attributes ] ( class_declaration
+					 | struct_declaration
+					 | enum_declaration
+					 | delegate_declaration
+					 | method_declaration
+					 | signal_declaration
+					 | field_declaration
+					 | constant_declaration
+					 | property_declaration )
+			;
+namespace_declaration	: "namespace" symbol "{"
+				using_directive* namespace_member* "}"
+			;
+struct_declaration	: [ access_modifier ] [ type_declaration_modifiers ]
+				"struct" symbol [ ":" base_types ]
+					"{" struct_member* "}"
+			;
+struct_member		: [ attributes ] ( method_declaration
+					 | field_declaration
+					 | constant_declaration
+					 | property_declaration )
+			;
+creation_method_declaration
+			: [ access_modifier ] [ constructor_declaration_modifiers ]
+				symbol "(" [ parameters ] ")"
+					[ throws ] [ requires ] [ ensures ]
+						( ";" | block )
+			;
+parameters		: parameter [ "," parameter ]*
+			;
+parameter		: [ attributes ] ( "..."
+					 | ( [ "params" ] [ "out" | "ref" ]
+						type identifier [ "=" expression ] ) )
+			;
+throws			: "throws" type [ "," type ]*
+			;
+requires		: "requires" "(" expression ")" [ requires ]
+			;
+ensures			: "ensures" "(" expression ")" [ ensures ]
+			;
+delegate_declaration	: [ access_modifier ] [ delegate_declaration_modifiers ]
+				type symbol [ type_parameters ]
+					"(" [ parameters ] ")" [ throws ] ";"
+			;
+delegate_declaration_modifiers
+			: delegate_declaration_modifier
+				[ " " delegate_declaration_modifier ]*
+			;
+delegate_declaration_modifier
+			: "async" | "class" | "extern" | "inline" | "abstract"
+				| "virtual" | "override"
+			;
+signal_declaration	: [ access_modifier ] [ signal_declaration_modifiers ]
+				"signal" type identifier "(" [ parameters ] ")"
+					( ";" | block )
+			;
+signal_declaration_modifiers
+			: signal_declaration_modifier
+				[ " " signal_declaration_modifier ]*
+			;
+signal_declaration_modifier
+			: "async" | "extern" | "inline" | "abstract"
+				| "virtual" | "override" | "new"
+			;
+method_declaration	: [ access_modifier ] [ member_declaration_modifier ]
+				type identifier [ type_parameters ]
+					"(" [ parameters ] ")" 
+				[ throws ] [ requires ] [ ensures ] ( ";" | block )
+			;
+constant_declaration	: [ access_modifier ] [ member_declaration_modifiers ]
+				"const" type identifier [ inline_array_type ]
+					[ "=" expression ] ";"
+			;
+inline_array_type	: "[" integer_literal "]"
+			;
+field_declaration	: [ access_modifier ] [ member_declaration_modifiers ]
+				type_weak identifier [ "=" expression ] ";"
+			;
+property_declaration	: [ access_modifier ] [ property_declaration_modifiers ]
+				type_weak identifier
+					"{" property_declaration_part* "}"
+			;
+property_declaration_part
+			: ( "default" "=" expression ";" )
+			| property_accessor
+			;
+property_accessor	: [ attributes ] [ access_modifier ] 
+				( property_get_accessor
+				| property_set_construct_accessor )
+			;
+property_get_accessor	: "get" ( ";" | block )
+			;
+property_set_construct_accessor
+			: ( "set" "construct" | "construct" "set" )
+				( ";" | block )
+			;
+property_declaration_modifiers
+			: property_declaration_modifier
+				[ " " property_declaration_modifier ]*
+			;
+property_declaration_modifier
+			: "class" | "static" | "extern" | "inline" | "abstract"
+				| "virtual" | "override" | "new"
+			;
+statement		: local_variable_declarations
+			| embedded_statement
+			;
+embedded_statement	: block
+			| embedded_statement_without_block
+			;
+block			: "{" statement* "}"
+			;
+embedded_statement_without_block
+			: ";"
+			| if_statement
+			| switch_statement
+			| while_statement
+			| for_statement
+			| foreach_statement
+			| break_statement
+			| continue_statement
+			| return_statement
+			| yield_statement
+			| throw_statement
+			| try_statement
+			| lock_statement
+			| delete_statement
+			| expression_statement
+			;
+if_statement		: "if" "(" expression ")" embedded_statement
+				[ "else" embedded_statement ]
+			;
+switch_statement	: "switch" "(" expression ")" "{" switch_section* "}"
+			;
+switch_section		: ( "case" | "default" ) expression ":"
+			;
+while_statement		: "while" "(" expression ")"
+				embedded_statement
+			;
+do_statement		: "do" embedded_statement
+			  "while" "(" expression ")" ";"
+			;
+for_statement		: "for" "(" [ for_initializer ] ";"
+					[ expression ] ";" [ for_iterator ] ")"
+				embedded_statement
+			;
+for_initializer		: local_variable_declarations
+			| ( statement_expression [ "," statement_expression ]* )
+			;
+for_iterator		: statement_expression [ "," statement_expression ]*
+			;
+statement_expression	: expression
+			;
+foreach_statement	: "foreach" "(" ( "var" | type) identifier
+					"in" expression ")"
+				embedded_statement
+			;
+break_statement		: "break" ";"
+			;
+continue_statement	: "continue" ";"
+			;
+return_statement	: "return" [ expression ] ";"
+			;
+yield_statement		: "yield" [ expression_statement | "return" expression ] ";"
+			;
+throw_statement		: "throw" expression ";"
+			;
+try_statement		: "try" block catch_clause* [ finally_clause ]
+			;
+catch_clause		: "catch" [ "(" type_weak identifier ")" ] block
+			;
+finally_clause		: "finally" block
+			;
+lock_statement		: "lock" "(" expression ")" embedded_statement
+			;
+delete_statement	: "delete" expression ";"
+			;
+local_variable_declarations
+			: ( "var" | type ) local_variable_declaration
+				[ "," local_variable_declaration ]*
+			;
+local_variable_declartion
+			: local_tuple_declaration
+			| local_variable
+			;
+local_tuple_declaration : "(" identifier [ "," identifier ]* ")" "=" expression
+			;
+local_variable		: identifier [ inline_array_type ] [ "=" expression ]
+			;
+expression_statement	: statement_expression ";"
+-----------
+

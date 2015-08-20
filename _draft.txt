@@ -1,0 +1,10 @@
+= Draft: Fun to Program
+Osamu Aoki
+
+//include::build.txt[]
+
+//include::python.txt[]
+
+// include::chroot.txt[]
+
+include::xml.txt[]

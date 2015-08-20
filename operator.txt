@@ -1,0 +1,28 @@
+.C Operator Precedence
+[cols="3,2,1,1",grid="all",options="header"]
+|=====
+| operator type | operator expression | precidence | space
+| func. operator, array operator, structure member operator | `func(...)` `array[...]` `parentptr->id` `parent.id` | L <- R | no
+| prefix unary operator (address-of, pointer-to, plus, minus, bitwise not, logical not) | `&` `*` `+` `-` `~` `!` | L <- R | no (yes before)
+| binary operator (mul., div., mod.) | `*` `/` `%` | L -> R | yes
+| binary operator (add, sub) | `+` `-` | L -> R | yes
+| bitwise shift operator (shr, shl) | `>>` `<<`| L -> R | yes
+| logical relational operator (gt,lt,ge,le) | `>` `<` `>=` `<=`| L -> R | yes
+| logical equity operator (eq,ne) | `==` `!=`| L -> R | yes
+| bitwise and operator (and) | `&` | L -> R | yes
+| bitwise xor operator (xor) | `^` | L -> R | yes
+| bitwise or operator (or) | `\|` | L -> R | yes
+| logical and operator (and) | `&&` | L -> R | yes
+| logical or operator (or) | `\|\|` | L -> R | yes
+| conditional operator | `? :` | L <- R | yes
+| assignment operator | `=` `*=` `/=` `%=` `+=` `-=` `<<=` `>>=` `&=` `^=` `\|=` | L <- R | yes
+| comma operator | `,` | L -> R | no (yes for after)
+|=====
+
+Please note:
+
+* logical xor operator can be "`!a != !b`"
+* "`foo = *p++`" is "`foo = *(p++)`" or "`foo = *p, p++`". (FIXME TEST!)
+* "`int *foo()`" is a function "`foo`". The function returns a pointer to an integer value.  Equivalent of "`int *(foo())`".
+* "`int (*foo)()`" is a function "(*foo)" pointed by "`foo`".  The function returns an integer value.
+

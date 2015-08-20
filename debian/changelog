@@ -1,0 +1,7 @@
+fun2prog (1.0-1) UNRELEASED; urgency=low
+
+* Initial release. Closes: #nnnn
+  <nnnn is the bug number of your ITP>
+
+ -- Osamu Aoki <osamu@debian.org>  Thu, 18 Apr 2013 01:54:14 +0900
+

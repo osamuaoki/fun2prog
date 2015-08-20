@@ -1,0 +1,51 @@
+== GNOME
+
+The choice of the best GUI program practice is not simple since there are many
+choices for GUI platforms, many outdated documentations, new features without
+updated tutorials, and future uncertainties.
+
+Despite people had very negative reaction to the GNOME3 due to its new default
+user experience, I chose it as my GUI example platform for its fundamental
+internal technical merits.  We can always customize the user experience part.
+
+Here is my best effort to capture the recent GUI framework history for GNOME
+and best sources for references.  (The latest stable is GNOME3.4 as of 2012 Summer.)
+
+=== GNOME history
+
+http://en.wikipedia.org/wiki/GTK+[GTK+] is the GUI toolkit for
+http://en.wikipedia.org/wiki/GNOME[GNOME] and is build on the top of C with
+http://en.wikipedia.org/wiki/GLib[GLib] and
+http://en.wikipedia.org/wiki/GObject[GObject].  It requires many chores with
+boiler plate macro definitions when used directly from a C program.  Its
+modularity as a GUI toolkit has evolved roughly as follows.
+
+* GTK+1.0 (1998): just separated from http://www.gimp.org/about/ancient_history.html[GIMP].
+* GTK+1.2 (1999): reasonable shape for general applications.
+* GTK+2.0 (2002): for GNOME2 based on GLib, GObject, GIO, ATK, GDK, GdkPixbuff
+* GTK+3.0 (2011): for GNOME3 based on GLib, GObject, GIO, ATK, GDK, GdkPixbuff, http://en.wikipedia.org/wiki/Pango[Pango]
+** GTK+3.0 works with http://en.wikipedia.org/wiki/Cairo_(graphics)[Cairo], http://en.wikipedia.org/wiki/Clutter_(toolkit)[Clutter], and https://live.gnome.org/GObjectIntrospection/[GObject-introspection], ...
+
+http://en.wikipedia.org/wiki/GNOME[GNOME] has evolved significantly with its
+http://en.wikipedia.org/wiki/Inter-process_communication[inter-process
+communication (IPC)] structure.  Its history is roughly as follows.
+
+* GNOME1 (1999): http://en.wikipedia.org/wiki/CORBA[CORBA] (= http://en.wikipedia.org/wiki/Bonobo_(component_model)[Bonobo] + libIDL + ORBit) as IPC established.
+* GNOME2 (2002): Antialiased fonts, UNICODE support (internationalization), HIG compliance (accessibility), ...
+** GNOME2 cycle: IPC migrated from CORBA to http://en.wikipedia.org/wiki/D-Bus[D-Bus].
+* GNOME3 (2011): D-Bus as IPC established. (http://developer.gnome.org/platform-overview/2.32/bonobo-corba.html.en[CORBA deprecated])
+** GNOME3 cycle: https://live.gnome.org/GObjectIntrospection/[GObject-Introspection] is introduced.
+*** https://live.gnome.org/Vala[Vala] is becoming a popular choice to write applications for the native binary target instead of traditional and complicated C code with many boiler plate macro definitions.
+*** http://en.wikipedia.org/wiki/Python_(programming_language)[Python] with https://live.gnome.org/PyGObject[PyGObject] is a popular choice to write applications under the high level interpreter language with http://en.wikipedia.org/wiki/Just-in-time_compilation[JIT compilation].
+*** http://en.wikipedia.org/wiki/JavaScript[Javascript] is becoming the choice for the embedded language of applications with the https://live.gnome.org/Gjs[Gjs] binding.
+
+GNOME3 applications are just plain GTK+3 applications.  There is no code bloat
+by http://en.wikipedia.org/wiki/CORBA[CORBA] any more.
+
+https://live.gnome.org/GObjectIntrospection/Users[The language binding system
+based on GObject-Introspection] can provide:
+
+* tighter binding including the memory management than the generic language binding systems such as http://www.swig.org/[SWIG] can, and
+* more consistent binding across different languages.
+
+GObject-Introspection xml data of each library can be found under the `/usr/share/gir-1.0` directory.

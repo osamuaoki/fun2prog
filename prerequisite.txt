@@ -1,0 +1,48 @@
+=== Prerequisites
+
+
+I expect readers of this to read the followings first.
+
+* Debian system: http://www.debian.org/doc/manuals/debian-reference/[Debian Reference]
+* Debian packaging: http://www.debian.org/doc/manuals/maint-guide/[Debian New Maintainers' Guide]
+
+I have browsed through tutorial contents of these documents ... so I expect you to do the same.
+
+* Unix system: http://cm.bell-labs.com/cm/cs/upe/[The Unix Programming Environment] (Brian W. Kernighan and Rob Pike. Prentice Hall, Inc., 1984. )
+* POSIX shell: http://tldp.org/LDP/abs/html/[Advanced Bash-Scripting Guide]
+* C Language:
+** http://cm.bell-labs.com/cm/cs/cbook/[The C Programming Language] (2nd ed., Brian W. Kernighan, Dennis M. Ritchie Prentice Hall.)
+** Gccintro package containing "Introduction to GCC by Brian J. Gough": `apt-get install gccintro` (non-free GFDL package)
+* Python:
+** http://www.python.org/ and http://docs.python.org/tutorial/[The Python Tutorial]
+* Vala: https://live.gnome.org/Vala[Vala] and https://live.gnome.org/Vala/Tutorial[Vala Tutorial]
+* Lua: http://www.lua.org/ and  http://www.lua.org/pil/[Programming in Lua]
+* Perl: http://www.perl.org/ and http://perldoc.perl.org/index-tutorials.html[Perl Tutorials]
+* Devhelp package: `apt-get install devhelp` with recommended packages.
+** libglib2.0-doc: Documentation files for the GLib library
+** libgtk2.0-doc: Documentation for the GTK+2 graphical user interface library (tutorial included)
+** libgtk-3-doc: Documentation for the GTK+3 graphical user interface library
+** libpango1.0-doc: Documentation files for the Pango
+** ...
+
+Also, I recently found on-line textbooks from http://www.greenteapress.com/[Green Tea Press].  They are very informative.
+
+* http://www.greenteapress.com/thinkpython/thinkpython.html[Think Python: How to Think Like a Computer Scientist] by Allen B. Downey
+* http://www.greenteapress.com/thinkapjava/index.html[Think Java: How to Think Like a Computer Scientist] by Allen B. Downey
+* http://www.greenteapress.com/thinkcpp/index.html[How to Think Like a Computer Scientist - 'C++-Version' (PDF)] by Allen B. Downey
+* http://prof.beuth-hochschule.de/scheffler/lehre/programmieren-in-c/[How to Think Like a Computer Scientist - 'C-Version' (PDF)] by Allen B. Downey (C-Version by Thomas Scheffler)
+
+Here are extra sources of information ...
+
+* Wikipedia: http://en.wikipedia.org/wiki/C_(programming_language)[C (programming language)]
+* Wikibook: http://en.wikibooks.org/wiki/C_Programming[C Programming]
+* Slightly outdated: http://www.iu.hio.no/~mark/CTutorial/[C Programming Tutorial (K&R version 4)]
+* Wikipedia: http://en.wikipedia.org/wiki/Bourne_shell[Bourne shell]
+* Wikipedia: http://en.wikipedia.org/wiki/Python_(programming_language)[Python]
+* Wikipedia: http://en.wikipedia.org/wiki/Vala_(programming_language)[Vala]
+* Wikipedia: http://en.wikipedia.org/wiki/Lua_(programming_language)[Lua]
+* Wikipedia: http://en.wikipedia.org/wiki/Perl[Perl]
+
+TIP: Install all dependency packages of devscripts, vim, lua, python, python3, perl, vala, swig, git, manpages-dev, devhelp, ...
+
+

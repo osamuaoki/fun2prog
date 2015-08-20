@@ -1,0 +1,18 @@
+$ cat ./hello
+#!/bin/sh
+# my first shell program
+echo "Hello, world!"
+$ gpg -ca ./hello
+ER$netpceearattp.ap/sahssepslhplrhoar.saaess:ec:
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1
+
+jA0EAwMCrIg7DxgtTH5gyU+OiGdl2Gx4aU/PU7ob1F0ysG/LNqiQJX0+cCk/Xg8q
+MUZ3dHthwaK+FdN7vpC9KmRQBKHPnOeIw8D+fCOA2u5OYRIZc25R44MYS9wWXxsD
+=kYXh
+-----END PGP MESSAGE-----
+$ echo "#!/bin/sh">hello-secret
+$ echo 'cat - <<EOF | gpg -d --no-mdc-warning | while read x ;do eval "$x"; done
+' >>hello-secret
+$ cat ./hello.asc >>hello-secret
+$ echo "EOF" >>hello-secret

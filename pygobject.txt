@@ -1,0 +1,37 @@
+=== PyGObject
+
+Python bindings of GTK+ has evolved.
+
+* PyGTK for GTK+2: (deprecated))
+** starting code with "`import pygtk`" (newer), or "`import gtk`" (older) 
+* PyGObject for GTK+3: (recommended)
+** starting code with "`from gi.repository import Gtk`" (current)
+
+So we focus on the latest PyGObject for GTK+3 and recommend you to start with:
+
+* http://python-gtk-3-tutorial.readthedocs.org/en/latest/[The Python GTK+ 3 Tutorial] (2012)
+
+Unfortunately, as of 2012 on Debian wheezy, we can not find good reference
+documentations of GTK+3 and its related libraries for Python.  
+
+We can create a usable reference documentation of GTK+3 and related libraries
+by yourself using the `g-ir-doc-tool` command from the gobject-introspection
+package as explained in
+https://live.gnome.org/GObjectIntrospection/Doctools[GObject Introspection
+Doctools].  
+
+-----
+$ g-ir-doc-tool --language Python -o ./output_dir /usr/share/gir-1.0/Gtk-3.0.gir
+$ yelp ./output_dir/index.page
+-----
+
+Despite the efforts to make GTK+3 PyGObject as compatible to the older GTK+2
+PyGTK as possible, the differences are still huge.  See
+http://pfrields.fedorapeople.org/presentations/OhioLF2011/PyGObject.pdf[Graduating
+to GUI (PDF)].
+
+Please note older PyGTK for GTK+2 are still used widely as of now.  The new
+GTK+3 Python codes using PyGObject such as `accerciser`, `caribou-preferences`,
+`gdebi-gtk`, `gnome-shell-timer-config`, `software-center`, and
+`software-properties-gtk` provide us with good examples.
+

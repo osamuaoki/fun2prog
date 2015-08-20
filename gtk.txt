@@ -1,0 +1,19 @@
+=== GTK+3
+
+Although we are at GTK+3, we have many older documentations for GTK+2 but not enough ones for GTK+3.
+
+Those older documentations for GTK+2 contain useful contents as long as they are used carefully.
+
+For pure C programs, migrating from GTK+2 to GTK3+ is basically as easy as
+changing from "gtk+-2.0" to "gtk+-3.0" in `pkg-config` argument.  In case of
+troubles such as missing `GtkObject` and many missing GDK API issues, see
+http://developer.gnome.org/gtk3/3.0/migrating.html[GTK+ 3 Reference Manual:
+Part V. Migrating from Previous Versions of GTK+].
+
+Here are basic references:
+
+* http://en.wikipedia.org/wiki/GTK+[GTK+ (wikipedia)]
+* http://www.gtk.org/documentation.php[GTK+ (upstream doc)], or via `devhelp`
+* http://developer.gnome.org/gtk3/stable/index.html[GTK+ 3 Reference Manual]
+
+

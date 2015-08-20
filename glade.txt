@@ -1,0 +1,18 @@
+=== Glade
+
+http://en.wikipedia.org/wiki/Glade_Interface_Designer[Glade] is the UI design
+tool for GTK+.  Its output is an XML file and can be loaded directly to GTK+.
+If you wish to simplify the GUI coding process with many UI widgets under any
+language, please think about using Glade.
+
+See:
+
+* https://live.gnome.org/Glade/Tutorials[Glade Tutorials] (pointers)
+** http://blog.borovsak.si/[Tips and tutorials related to GTK+ toolkit] (2009-2010)
+** http://www.micahcarrick.com/gtk-glade-tutorial-part-1.html[GTK+ and Glade3 GUI Programming Tutorial] (2007)
+** http://scentric.net/tutorial/treeview-tutorial.html[GTK+ 2.0 Tree View Tutorial] (2005)
+** http://virtualex.linuxoid.net/2009/08/18/glade-catalog-tutorial/[Glade Catalog Tutorial] (2009)
+* http://developer.gnome.org/gladeui/3.6/[Glade User Interface Designer Reference Manual] (API for Glade 3.6)
+* http://www.youtube.com/playlist?list=PL70617645D7DC1FD1&feature=plcp[Tutorial: A GUI application using Python & gtk.Builder] (2009, Video)
+** Learn how to use Glade GUI from video.
+** Disregard details of Python code since it is based on gtk.Builder from PyGTK for GTK+2 and outdated.

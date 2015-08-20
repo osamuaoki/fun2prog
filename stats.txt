@@ -1,0 +1,31 @@
+=== System Statistics
+
+==== Executables
+
+Let's check roughly what kind of executables are used on my typical GNOME desktop Debian system building this document.
+
+.Statistics over installed executable programs
+[cols="10,3", options="header"]
+|=======================
+|Executable type|Number of programs
+include::stat/lang/lang.stat[]
+|=======================
+
+ELF executable can be generated from any compiled languages such as C, C\+\+, ,
+Objective C, Objective C\+\+, Vala, Common Lisp, Scheme, Haskel, Pascal,
+Fortran, Ada, ...  but most likely they are from C or C++.
+
+This gives some idea for popularity of programming language on Debian system.  Of course, the above sampling method focus on the system programming and hides the popularities of PHP, Java, Javascript and Ruby which are mostly used for the web programming etc.  For general idea for popularity of languages, see links from wikipedia article: http://en.wikipedia.org/wiki/Measuring_programming_language_popularity[measuring programming language popularity].
+
+==== Libraries
+
+Let's check roughly what libraries are used on a typical GNOME desktop Debian system.
+I only list ones used by more than 70 ELF executable programs.
+
+.Statistics over libraries used by ELF executable programs
+[cols="10,3", options="header"]
+|=======================
+|Library|Number of programs
+include::stat/lang/lib.txt[]
+|=======================
+

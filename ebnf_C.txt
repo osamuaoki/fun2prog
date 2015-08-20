@@ -1,0 +1,212 @@
+=== C syntax in EBNF
+
+.C syntax in EBNF.
+-----------
+translation-unit	: [ translation-unit] external-decl
+			;
+external-decl		: function-definition
+			| decl
+			;
+function-definition	: [ decl-specs ] declarator [ decl-list ] compound-stat
+			;
+decl			: decl-specs [ init-declarator-list ] ';'
+			;
+decl-list		: [ decl-list ] decl
+			;
+decl-specs		: storage-class-spec [ decl-specs ]
+			| type-spec          [ decl-specs ]
+			| type-qualifier     [ decl-specs ]
+			;
+storage-class-spec	: 'auto' | 'register' | 'static' | 'extern' | 'typedef'
+			;
+type-spec		: 'void' | 'char' | 'short' | 'int' | 'long' | 'float'
+			| 'double' | 'signed' | 'unsigned'
+			| struct-or-union-spec
+			| enum-spec
+			| typedef-name
+			;
+type-qualifier		: 'const' | 'volatile'
+			;
+struct-or-union-spec	: struct-or-union [ id ] '{' struct-decl-list '}'
+			| struct-or-union   id
+			;
+struct-or-union		: 'struct' | 'union'
+			;
+struct-decl-list	: [ struct-decl-list ] struct-decl
+			;
+init-declarator-list	: [ init-declarator-list ',' ] init-declarator
+			;
+init-declarator		: declarator [ '=' initializer ]
+			;
+struct-decl		: spec-qualifier-list struct-declarator-list ';'
+			;
+spec-qualifier-list	: type-spec      [ spec-qualifier-list ]
+			| type-qualifier [ spec-qualifier-list ]
+			;
+struct-declarator-list	: [ struct-declarator-list ',' ] struct-declarator
+			;
+struct-declarator	: declarator
+			| declarator ':' const-exp
+			|		':' const-exp
+			;
+enum-spec		: 'enum' [ id ] '{' enumerator-list '}'
+			| 'enum' id
+			;
+enumerator-list		: [ enumerator-list ',' ] enumerator
+			;
+enumerator		: id [ '=' const-exp ]
+			;
+declarator		: [ pointer ] direct-declarator
+			;
+direct-declarator	: id
+			| '(' declarator ')'
+			| direct-declarator '[' [ const-exp ] ']'
+			| direct-declarator '(' [ param-type-list 
+						| id-list ] ')'
+			;
+pointer			: '*' [ type-qualifier-list ] [ pointer ]
+			;
+type-qualifier-list	: type-qualifier
+			| type-qualifier-list type-qualifier
+			;
+param-type-list		: param-list [ ',' '...' ]
+			;
+param-list		: [ param-list ',' ] param-decl
+			;
+param-decl		: decl-specs [ declarator | abstract-declarator ]
+			;
+id-list			: [ id-list ',' ] id
+			;
+initializer		: assignment-exp
+			| '{' initializer-list '}'
+			| '{' initializer-list ',' '}'
+			;
+initializer-list	: [ initializer-list ',' ] initializer
+			;
+type-name		: spec-qualifier-list [ abstract-declarator ]
+			;
+abstract-declarator	: pointer [ direct-abstract-declarator ]
+			|	    direct-abstract-declarator
+			;
+direct-abstract-declarator: '(' abstract-declarator ')'
+			| [ direct-abstract-declarator ] '[' [ const-exp ] ']'
+			| [ direct-abstract-declarator ] '(' [ param-type-list ] ')'
+			;
+typedef-name		: id
+			;
+stat			: labeled-stat
+			| exp-stat
+			| compound-stat
+			| selection-stat
+			| iteration-stat
+			| jump-stat
+			;
+labeled-stat		: id ':' stat
+			| 'case' const-exp ':' stat
+			| 'default' ':' stat
+			;
+exp-stat		: [ exp ] ';'
+			;
+compound-stat		: '{' [ decl-list] [ stat-list ] '}'
+			;
+stat-list		: [ stat-list ] stat
+			;
+selection-stat		: 'if' '(' exp ')' stat [ 'else' stat ]
+			| 'switch' '(' exp ')' stat
+			;
+iteration-stat		: 'while' '(' exp ')' stat
+			| 'do' stat 'while' '(' exp ')' ';'
+			| 'for' '(' [ exp ] ';' [ exp ] ';' [ exp ] ')' stat
+			;
+jump-stat		: 'goto' id ';'
+			| 'continue' ';'
+			| 'break' ';'
+			| 'return' exp ';'
+			| 'return'	';'
+			;
+exp			: [ exp ',' ] assignment-exp
+			;
+assignment-exp		: conditional-exp
+			| unary-exp assignment-operator assignment-exp
+			;
+assignment-operator	: '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<='
+			| '>>=' | '&=' | '^=' | '|='
+			;
+conditional-exp		: logical-or-exp
+			| logical-or-exp '?' exp ':' conditional-exp
+			;
+const-exp		: conditional-exp
+			;
+logical-or-exp		: logical-and-exp
+			| logical-or-exp '||' logical-and-exp
+			;
+logical-and-exp		: inclusive-or-exp
+			| logical-and-exp '&&' inclusive-or-exp
+			;
+inclusive-or-exp	: exclusive-or-exp
+			| inclusive-or-exp '|' exclusive-or-exp
+			;
+exclusive-or-exp	: and-exp
+			| exclusive-or-exp '^' and-exp
+			;
+and-exp			: equality-exp
+			| and-exp '&' equality-exp
+			;
+equality-exp		: relational-exp
+			| equality-exp '==' relational-exp
+			| equality-exp '!=' relational-exp
+			;
+relational-exp		: shift-expression
+			| relational-exp '<' shift-expression
+			| relational-exp '>' shift-expression
+			| relational-exp '<=' shift-expression
+			| relational-exp '>=' shift-expression
+			;
+shift-expression	: additive-exp
+			| shift-expression '<<' additive-exp
+			| shift-expression '>>' additive-exp
+			;
+additive-exp		: mult-exp
+			| additive-exp '+' mult-exp
+			| additive-exp '-' mult-exp
+			;
+mult-exp		: cast-exp
+			| mult-exp '*' cast-exp
+			| mult-exp '/' cast-exp
+			| mult-exp '%' cast-exp
+			;
+cast-exp		: unary-exp
+			| '(' type-name ')' cast-exp
+			;
+unary-exp		: postfix-exp
+			| '++' unary-exp
+			| '--' unary-exp
+			| unary-operator cast-exp
+			| 'sizeof' unary-exp
+			| 'sizeof' '(' type-name ')'
+			;
+unary-operator		: '&' | '*' | '+' | '-' | '~' | '!'
+			;
+postfix-exp		: primary-exp
+			| postfix-exp '[' exp ']'
+			| postfix-exp '(' argument-exp-list ')'
+			| postfix-exp '('			')'
+			| postfix-exp '.' id
+			| postfix-exp '->' id
+			| postfix-exp '++'
+			| postfix-exp '--'
+			;
+primary-exp		: id
+			| const
+			| string
+			| '(' exp ')'
+			;
+argument-exp-list	: [ argument-exp-list ',' ] assignment-exp
+			;
+const			: int-const
+			| char-const
+			| float-const
+			| enumeration-const
+			;
+-----------
+

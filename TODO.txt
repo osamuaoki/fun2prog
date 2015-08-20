@@ -1,0 +1,108 @@
+Make:
+ clean:     clean mostly non-time consuming build
+ distclean: clean everything
+
+====================
+http://docs.python.org/3/distutils/index.html
+
+http://c2.com/cgi/wiki?MixinsForPython
+http://en.wikipedia.org/wiki/Mixin
+
+In Python, the SocketServer module has both a UDPServer and TCPServer class that act as a server for UDP and TCP socket servers. Normally, all new connections are handled within the same process. Additionally, there are two mixin classes: ForkingMixIn and ThreadingMixIn. By extending TCPServer with the ThreadingMixIn like this
+class ThreadingTCPServer(ThreadingMixIn, TCPServer):
+  pass
+the ThreadingMixIn class adds functionality to the TCP server such that each new connection creates a new thread. Alternatively, using the ForkingMixIn would cause the process to be forked for each new connection. Clearly, the functionality to create a new thread or fork a process is not terribly useful as a stand-alone class.
+In this usage example, the mixins provide alternative underlying functionality without affecting the functionality as a socket server.
+
+
+http://wiki.python.org/moin/BaseHttpServer
+http://www.linuxjournal.com/content/tech-tip-really-simple-http-server-python
+http://www.linuxtopia.org/online_books/programming_books/python_programming/python_ch36s02.html
+
+======================================
+* GDB
+
+* Build script
+** cmake 
+** python distutils
+   http://docs.python.org/3/distutils/index.html
+
+** rpm spec -> debian rules tip
+  http://www.ibiblio.org/pub/linux/docs/howto/other-formats/html_single/RPM-HOWTO.html
+  http://www.rpm.org/max-rpm/ch-rpm-inside.html
+  http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/index.html
+  http://wiki.meego.com/Packaging/Deb_conversion_example
+  http://wiki.meego.com/Spectacle
+  https://blueprints.launchpad.net/openstack-common/+spec/package-example-building<F3>
+
+  http://www.artificialworlds.net/blog/2007/02/22/creating-deb-and-rpm-packages/
+
+
+
+
+* SWIG
+
+debucle fsf ...
+
+====
+shared library
+http://stackoverflow.com/questions/4022127/how-the-share-library-be-shared-by-different-processes
+
+
+=====
+Hagaki
+http://godira.blogspot.jp/2011/11/ubuntu1110libreoffice.html
+http://park.geocities.jp/cheflapin/LibreOffice3.html
+http://www.h7.dion.ne.jp/~greens/
+http://oooug.jp/faq/index.php?GreetingCards-HOWTO_2#content_1_4
+http://www.tripadvisor.com/PressCenter-i5618-c1-Press_Releases.html
+
+=====
+pthread
+http://www.tsoftware.jp/nptl/
+
+====
+multiarch
+https://wiki.ubuntu.com/MultiarchSpec
+http://lwn.net/Articles/482952/
+
+======
+gnomeshell - javascript
+https://live.gnome.org/GnomeShell
+https://live.gnome.org/GnomeShell/Extensions
+https://live.gnome.org/GnomeShell/Extensions/StepByStepTutorial
+https://developer.mozilla.org/en-US/learn/javascript
+https://live.gnome.org/JavaScript
+http://developer.gnome.org/gnome-devel-demos/stable/index.html.en
+http://en.wikipedia.org/wiki/JavaScript_syntax
+
+======
+Powersaving
+http://en.opensuse.org/Powersaving
+
+
+======
+TEX multicolumn problem
+
+\multicolumn{cols}{pos}{text}
+The \multicolumn is used to make an entry that spans several columns. The first mandatory argument, cols, specifies the number of columns to span. The second mandatory argument, pos, specifies the formatting of the entry; c for centered, l for flushleft, r for flushright. The third mandatory argument, text, specifies what text is to make up the entry. 
+
+rootcause?
+http://newsgroups.derkeiler.com/Archive/Comp/comp.text.tex/2011-04/msg00718.html
+
+basic explanation
+http://en.wikibooks.org/wiki/LaTeX/Tables
+http://insti.physics.sunysb.edu/latex-help/ltx-322.html
+
+hint for solution
+
+http://www.tex.ac.uk/cgi-bin/texfaq2html?label=twooptarg
+
+http://tex.stackexchange.com/questions/21155/coloring-a-multirow
+
+http://tex.stackexchange.com/questions/69606/misplaced-omit-multispan-with-newcommand
+
+Solid suggestion
+not using \newcommand
+http://xelatex.blogspot.jp/2008/03/newcommand-with-optional-argument.html
+
