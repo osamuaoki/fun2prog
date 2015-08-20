@@ -20,5 +20,8 @@ My local user name on this machine is osamu. You may need to replace it with you
 
 Please be careful about the publication date of reference documents since the software infrastructure is a moving target and such documentations may be obsoleted when you read this document.
 
-Tip: If you find any questionable contents in this document, doubt them. If you find errors, let me know.
+Tip: If you find any questionable contents in this document, doubt them. If you find errors, let me know by email.
 
+ $ echo "osamu#debian.org" | sed 's/#/@/'
+
+Generated HTML page is available at: https://people.debian.org/~osamu/fun2prog.html
