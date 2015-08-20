@@ -26,6 +26,10 @@ All Perl scripts can be traced automatically.
 
 The tracing of the command execution can be truned on and off by the "`$Devel::Trace::TRACE = 1;`" and "`$Devel::Trace::TRACE = 0;`" commands, too.
 
+Perl also can offer interactive console by starting its debugger with "`perl -de1`". See http://perldoc.perl.org/perlfaq3.html[Perl FAQ - Programming Tools].
+
+There are http://www.sukria.net/perlconsole.html[Perl Console] (the `perlconsole` package), http://gnp.github.io/psh/[Perl Shell (psh)], and several packages found with "perl shell", too.
+
 === python -m trace
 
 All Python scripts can be traced automatically.
