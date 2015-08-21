@@ -9,9 +9,9 @@ There are several ways to trace programs non-interactively without any modificat
 
 All POSIX shell like shells (Bash, Pdksh, Dash, ...) support the `-x` option to turn on the automatic tracing of the command execution.
 
----
+----
  $ sh -x program.sh
----
+----
 
 The tracing of the command execution can be truned on and off by the "`set -x`" and "`set +x`" commands, too.
 
@@ -19,10 +19,10 @@ The tracing of the command execution can be truned on and off by the "`set -x`" 
 
 All Perl scripts can be traced automatically.
 
----
+----
  $ sudo apt-get install libdevel-trace-perl
  $ perl -x program.pl
----
+----
 
 The tracing of the command execution can be truned on and off by the "`$Devel::Trace::TRACE = 1;`" and "`$Devel::Trace::TRACE = 0;`" commands, too.
 
@@ -34,9 +34,9 @@ There are http://www.sukria.net/perlconsole.html[Perl Console] (the `perlconsole
 
 All Python scripts can be traced automatically.
 
----
+----
  $ python -m trace --count -C . program.py
----
+----
 
 See the https://docs.python.org/3/library/trace.html[trace] module.
 
