@@ -44,11 +44,17 @@ PACKAGES = \
 
 export DOCNAME SHELL PATH TERM
 
+# explicit targets
 all:
 	$(MAKE) data
-	-rm -f *.html
+	$(MAKE) clean
 	$(MAKE) $(DOCNAME).html
 
+clean:
+	-rm -f *.html
+
+# distclean is the implicit target
+# reset clean the statistics of the installed packages, too.
 reset:
 	$(MAKE) distclean
 	$(MAKE) -C stat/lang reset
@@ -59,15 +65,19 @@ $(DOCNAME).html: $(wildcard *.txt)
 draft:
 	-asciidoc -d book -atoc2 _draft.txt
 
-htmlclean:
-	-rm -f *.html
-
 remote:
 	cp -f $(DOCNAME).html ../$(DOCNAME).html
 	#$(MAKE) distclean
-	tar -cvJf ../$(DOCNAME).tar.xz ./
+	tar --exclude-vcs --xz -cvf ../$(DOCNAME).tar.xz ./
 	scp ../$(DOCNAME).html people.debian.org:~osamu/public_html/
 	scp ../$(DOCNAME).tar.xz people.debian.org:~osamu/public_html/
+
+prep:
+	sudo apt-get update
+	sudo apt-get dist-upgrade
+	sudo apt-get install $(PACKAGES)
+
+# Following targets are not called directly
 
 data:
 	$(MAKE) -C hello all
@@ -101,10 +111,4 @@ data:
 	$(MAKE) -C stat $@
 	$(MAKE) -C process $@
 	$(MAKE) -C python $@
-
-prep:
-	sudo apt-get update
-	sudo apt-get dist-upgrade
-	sudo apt-get install $(PACKAGES)
-
 

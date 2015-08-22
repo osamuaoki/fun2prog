@@ -1,14 +1,14 @@
-| ELF executable (all)      | 2398
-| ELF executable (set*id)      | 28
-| ELF executable (linked to libc)     | 2366
-| ELF executable (linked to libstdc\++ = C++)| 423
-| ELF executable (linked to libX11 = X)  | 459
-| ELF executable (linked to gobject = GNOME)  | 405
-| ELF executable (linked to libQtCore = KDE)       | 198
-| ELF executable (linked to libncurses)  | 51
-| POSIX shell script        | 567
-| Perl script               | 263
-| Python script             | 199
-| Bash shell script         | 150
-| Ruby script               | 32
-| Lua script                | 1
+| ELF executable (all)      | 1950
+| ELF executable (set*id)      | 16
+| ELF executable (linked to libc)     | 1949
+| ELF executable (linked to libstdc\++ = C++)| 309
+| ELF executable (linked to libX11 = X)  | 477
+| ELF executable (linked to gobject = GNOME)  | 399
+| ELF executable (linked to libQtCore = KDE)       | 146
+| ELF executable (linked to libncurses)  | 35
+| POSIX shell script        | 447
+| Perl script               | 192
+| Python script             | 123
+| Bash shell script         | 101
+| Ruby script               | 13
+| Lua script                | 0
